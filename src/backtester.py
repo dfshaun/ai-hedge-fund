@@ -7,13 +7,16 @@ from main import run_hedge_fund
 from tools.api import get_price_data
 
 class Backtester:
-    def __init__(self, agent, ticker, start_date, end_date, initial_capital):
+    def __init__(self, agent, ticker, start_date, end_date, initial_capital, initial_shares=0):
         self.agent = agent
         self.ticker = ticker
         self.start_date = start_date
         self.end_date = end_date
         self.initial_capital = initial_capital
-        self.portfolio = {"cash": initial_capital, "stock": 0}
+        self.portfolio = {
+            "cash": initial_capital,
+            "stock": initial_shares
+        }
         self.portfolio_values = []
 
     def parse_action(self, agent_output):
@@ -136,16 +139,18 @@ if __name__ == "__main__":
     parser.add_argument('--end_date', type=str, default=datetime.now().strftime('%Y-%m-%d'), help='End date in YYYY-MM-DD format')
     parser.add_argument('--start_date', type=str, default=(datetime.now() - timedelta(days=90)).strftime('%Y-%m-%d'), help='Start date in YYYY-MM-DD format')
     parser.add_argument('--initial_capital', type=float, default=100000, help='Initial capital amount (default: 100000)')
+    parser.add_argument('--initial_shares', type=int, default=0, help='Initial number of shares held')
 
     args = parser.parse_args()
 
-    # Create an instance of Backtester
+    # Create an instance of Backtester with initial shares
     backtester = Backtester(
         agent=run_hedge_fund,
         ticker=args.ticker,
         start_date=args.start_date,
         end_date=args.end_date,
         initial_capital=args.initial_capital,
+        initial_shares=args.initial_shares  # Pass the initial shares
     )
 
     # Run the backtesting process
